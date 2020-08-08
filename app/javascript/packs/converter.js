@@ -1,4 +1,4 @@
-// method 1, ajax call
+// method 1, xhr
 // window.convert1 = function() {
 //   const fromCurrency = document.getElementById('from-currency').textContent;
 //   const toCurrency = document.getElementById('to-currency').textContent;
@@ -29,28 +29,135 @@
 // }
 
 //method 2, fetch
-window.convert2 = function() {
-  const fromCurrency = document.getElementById('from-currency').textContent;
-  const toCurrency = document.getElementById('to-currency').textContent;
+// window.convert2 = function() {
+//   document.getElementById('result').innerHTML = "loading....";
+//
+//   const fromCurrency = document.getElementById('from-currency').value;
+//   const toCurrency = document.getElementById('to-currency').value;
+//
+//   const getJsonResponse = (coin) => {
+//     return fetch("https://api.coingecko.com/api/v3/coins/" + coin)
+//     .then(response => {
+//       return response.json();
+//     });
+//   }
+//
+//   const jsonResponse1 = getJsonResponse(fromCurrency);
+//   const jsonResponse2 = getJsonResponse(toCurrency);
+//
+//   Promise.all([jsonResponse1, jsonResponse2])
+//   .then(data => {
+//     const fromCurrencyToBtc = data[0].market_data.current_price.btc;
+//     const toCurrencyToBtc = data[1].market_data.current_price.btc;
+//     const conversionRate = fromCurrencyToBtc / toCurrencyToBtc;
+//     const total = document.getElementById('amount').value * conversionRate;
+//     document.getElementById('result').innerHTML = total;
+//   })
+//   .catch(error => {
+//     console.log(error);
+//   });
+// }
 
-  const getJsonResponse = (coin) => {
-    return fetch("https://api.coingecko.com/api/v3/coins/" + coin)
+const liTemplate = (coin) => { return `
+    <li href="#" class="list-group-item search-item">
+      ${coin}
+    </li>`;
+}
+
+const convert = () => {
+  const fromCurrency = document.getElementById('from-currency').value;
+  const toCurrency = document.getElementById('to-currency').value;
+  document.getElementById('result-middle').innerHTML = '<i class="fas fa-spinner"></i>';
+  document.getElementById('result-right').innerHTML = "";
+  document.getElementById('result-left').innerHTML = "";
+
+  fetch("https://api.coingecko.com/api/v3/coins/" + fromCurrency)
+  .then(response => {
+    return response.json();
+  })
+  .then(data1 => {
+    const fromCurrencyToBtc = data1.market_data.current_price.btc;
+    return fetch("https://api.coingecko.com/api/v3/coins/" + toCurrency)
     .then(response => {
       return response.json();
+    })
+    .then(data2 => {
+      const toCurrencyToBtc = data2.market_data.current_price.btc;
+      const conversionRate = fromCurrencyToBtc / toCurrencyToBtc;
+      const total = document.getElementById('amount').value * conversionRate;
+      document.getElementById('result-right').innerHTML = total;
+      document.getElementById('result-left').innerHTML = document.getElementById('amount').value
+      document.getElementById('result-middle').innerHTML = "=";
+    });
+  });
+}
+
+
+const debounce = (func, delay) => {
+  let inDebounce;
+  return function() {
+    const context = this;
+    const args = arguments;
+    clearTimeout(inDebounce);
+    inDebounce = setTimeout(() => {
+      func.apply(context, args)
+    }, delay);
+  }
+}
+
+function search() {
+  const query = this.value;
+  if (query) {
+    const apiUrl = `https://api.coingecko.com/api/v3/search?query=${query}`;
+    fetch(apiUrl)
+    .then(response => {
+      return response.json();
+    })
+    .then(json => {
+      document.querySelector(`#${this.id}-search-result`).classList.remove('hide');
+      document.querySelector(`#${this.id}-search-result`).innerHTML = '';
+      json.coins.forEach((item) => {
+        document.querySelector(`#${this.id}-search-result`).innerHTML += liTemplate(item.id);
+      });
+
+      const searchItem = Array.from(document.getElementsByClassName("search-item"));
+      if (searchItem) {
+        searchItem.forEach(item => {
+          item.addEventListener('click', () => {
+            this.value = item.textContent.trim();
+            if (!(Array.from(document.getElementById(`${this.id}-search-result`).classList)).includes('hide')) {
+              document.getElementById(`${this.id}-search-result`).classList.add('hide');
+            }
+          });
+        });
+      }
     });
   }
+}
 
-  const jsonResponse1 = getJsonResponse(fromCurrency);
-  const jsonResponse2 = getJsonResponse(toCurrency);
+window.onload = () => {
+  const convertButton = document.getElementById('convert-button');
+  const searchBox = Array.from(document.getElementsByClassName("search-box"));
+  convert();
 
-  Promise.all([jsonResponse1, jsonResponse2])
-  .then(data => {
-    const fromCurrencyToBtc = data[0].market_data.current_price.btc;
-    const toCurrencyToBtc = data[1].market_data.current_price.btc;
-    const conversionRate = fromCurrencyToBtc / toCurrencyToBtc;
-    document.getElementById('to-currency-value').value = document.getElementById('from-currency-value').value * conversionRate;
-  })
-  .catch(error => {
-    console.log(error);
+  convertButton.addEventListener('click', convert);
+  searchBox.forEach(item => {
+    item.addEventListener('keydown', debounce(search, 200));
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!(document.getElementById('from-currency-search-result').contains(e.target))) {
+      if (!(Array.from(document.getElementById('from-currency-search-result').classList)).includes('hide')) {
+        document.getElementById('from-currency-search-result').classList.add('hide');
+      }
+    }
+  });
+
+  window.addEventListener('click', (e) => {
+    if (!(document.getElementById('to-currency-search-result').contains(e.target))) {
+      if (!(Array.from(document.getElementById('to-currency-search-result').classList)).includes('hide')) {
+        document.getElementById('to-currency-search-result').classList.add('hide');
+      }
+    }
   });
 }
