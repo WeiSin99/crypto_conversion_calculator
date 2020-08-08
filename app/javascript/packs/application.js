@@ -17,3 +17,5 @@ require("channels")
 // const imagePath = (name) => images(name, true)
 
 require("./converter.js")
+// app/javascript/packs/application.js
+import "@fortawesome/fontawesome-free/js/all";
