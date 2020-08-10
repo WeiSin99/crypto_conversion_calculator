@@ -13,40 +13,24 @@ body {
 
 .converter-conatiner {
   background-color: #f8f8f8;
-  width: 650px;
-  height: 280px;
 }
 
-input {
-  padding: 3px 12px;
-  border: 1px solid #dddddd;
-}
-
-//search box
-.search-box {
-  width: 257px;
-}
-
-.hide {
-  position: absolute !important;
-  top: -9999px !important;
-  left: -9999px !important;
-}
-
+// search bar
 .search-result {
   position: absolute;
   border: 1px solid #dddddd;
   max-height: 280px;
-  width: 257px;
+  width: 100%;
   overflow: auto;
   z-index: 100;
   &::-webkit-scrollbar {
-    -webkit-appearance: none;
+    background-color: white;
     width: 6px;
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 5px;
     background-color: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
     -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
   }
 }
@@ -59,12 +43,19 @@ input {
     cursor: pointer;
   }
 }
+
+.hide {
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+}
+
 // button
 .btn-primary {
   background: $primary-color;
   border: 1px solid $primary-color;
   padding: 4px 15px;
-  height: $button-height;
+  height: 40px;
   cursor: pointer;
   font-size: $text-normal;
 }
@@ -75,11 +66,5 @@ input {
 }
 
 #exchange-button {
-  background: $primary-color;
-  border: 1px solid $primary-color;
-  height: 32px;
-  width: 38px;
-  cursor: pointer;
-  font-size: $text-normal;
-  padding: 0px;
+  height: 38px;
 }

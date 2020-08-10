@@ -58,18 +58,12 @@
 //   });
 // }
 
-const liTemplate = (coin) => { return `
-    <li href="#" class="list-group-item search-item">
-      ${coin}
-    </li>`;
-}
-
 const convert = () => {
-  const fromCurrency = document.getElementById('from-currency').value;
-  const toCurrency = document.getElementById('to-currency').value;
   document.getElementById('result-middle').innerHTML = '<i class="fas fa-spinner"></i>';
   document.getElementById('result-right').innerHTML = "";
   document.getElementById('result-left').innerHTML = "";
+  const fromCurrency = document.getElementById('from-currency').value;
+  const toCurrency = document.getElementById('to-currency').value;
 
   fetch("https://api.coingecko.com/api/v3/coins/" + fromCurrency)
   .then(response => {
@@ -85,6 +79,7 @@ const convert = () => {
       const toCurrencyToBtc = data2.market_data.current_price.btc;
       const conversionRate = fromCurrencyToBtc / toCurrencyToBtc;
       const total = document.getElementById('amount').value * conversionRate;
+
       document.getElementById('result-right').innerHTML = total;
       document.getElementById('result-left').innerHTML = document.getElementById('amount').value
       document.getElementById('result-middle').innerHTML = "=";
@@ -92,6 +87,11 @@ const convert = () => {
   });
 }
 
+const liTemplate = (coin) => { return `
+    <li href="#" class="list-group-item search-item">
+      ${coin}
+    </li>`;
+}
 
 const debounce = (func, delay) => {
   let inDebounce;
@@ -106,7 +106,7 @@ const debounce = (func, delay) => {
 }
 
 function search() {
-  const query = this.value;
+  const query = this.value.trim();
   if (query) {
     const apiUrl = `https://api.coingecko.com/api/v3/search?query=${query}`;
     fetch(apiUrl)
@@ -137,13 +137,14 @@ function search() {
 
 window.onload = () => {
   const convertButton = document.getElementById('convert-button');
-  const searchBox = Array.from(document.getElementsByClassName("search-box"));
-  convert();
+  const fromCurrencySearchBox = document.getElementById('from-currency');
+  const toCurrencySearchBox = document.getElementById('to-currency');
 
+  convert();
   convertButton.addEventListener('click', convert);
-  searchBox.forEach(item => {
-    item.addEventListener('keydown', debounce(search, 200));
-  });
+
+  fromCurrencySearchBox.addEventListener('keydown', debounce(search, 200));
+  toCurrencySearchBox.addEventListener('keydown', debounce(search, 200));
 
   window.addEventListener('click', (e) => {
     if (!(document.getElementById('from-currency-search-result').contains(e.target))) {
@@ -151,9 +152,7 @@ window.onload = () => {
         document.getElementById('from-currency-search-result').classList.add('hide');
       }
     }
-  });
 
-  window.addEventListener('click', (e) => {
     if (!(document.getElementById('to-currency-search-result').contains(e.target))) {
       if (!(Array.from(document.getElementById('to-currency-search-result').classList)).includes('hide')) {
         document.getElementById('to-currency-search-result').classList.add('hide');
