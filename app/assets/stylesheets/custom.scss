@@ -3,8 +3,65 @@
 $font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 $primary-color: #8dc647;
 $secondary-color: #7ab52b;
-$text-normal: 0.875rem;
 $button-height: 40px;
+
+$text-5xs: 0.5rem;
+$text-4xs: 0.625rem;
+$text-3xs: 0.7rem;
+$text-2xs: 0.75rem;
+$text-xs: 0.8rem;
+$text-sm: 0.875rem;
+$text-normal: 0.875rem;
+$text-base: 1rem;
+$text-lg: 1.125rem;
+$text-xl: 1.25rem;
+$text-2xl: 1.5rem;
+$text-3xl: 1.875rem;
+$text-4xl: 2.25rem;
+$text-5xl: 2.5rem;
+
+.text-5xs {
+  font-size: $text-5xs;
+}
+.text-4xs {
+  font-size: $text-4xs;
+}
+.text-3xs {
+  font-size: $text-3xs;
+}
+.text-2xs {
+  font-size: $text-2xs;
+}
+.text-xs {
+  font-size: $text-xs;
+}
+.text-sm {
+  font-size: $text-sm;
+}
+.text-normal {
+  font-size: $text-normal;
+}
+.text-base {
+  font-size: $text-base;
+}
+.text-lg {
+  font-size: $text-lg;
+}
+.text-xl {
+  font-size: $text-xl;
+}
+.text-2xl {
+  font-size: $text-2xl;
+}
+.text-3xl {
+  font-size: $text-3xl;
+}
+.text-4xl {
+  font-size: $text-4xl;
+}
+.text-5xl {
+  font-size: $text-5xl;
+}
 
 //container
 body {
@@ -16,6 +73,18 @@ body {
 }
 
 // search bar
+.search-box-wrapper {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #dddddd;
+  background-color: white;
+}
+
+.search-box {
+  border: none;
+  height: 100%;
+}
+
 .search-result {
   position: absolute;
   border: 1px solid #dddddd;
@@ -67,4 +136,13 @@ body {
 
 #exchange-button {
   height: 38px;
+}
+
+#amount {
+  height: 100%;
+}
+
+#result {
+  height: 100%;
+  color: green;
 }
