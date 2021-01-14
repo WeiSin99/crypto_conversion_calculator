@@ -68,7 +68,7 @@ const search = (direction) => {
               if (!(Array.from(document.getElementById(`${direction}-currency-search-result`).classList)).includes('hide')) {
                 document.getElementById(`${direction}-currency-search-result`).classList.add('hide');
               }
-              convert();
+              convert("forward")();
             });
           });
         }
@@ -77,35 +77,51 @@ const search = (direction) => {
   }
 }
 
-const convert = () => {
-  const fromCurrency = document.querySelector('#from .currency-id');
-  const toCurrency = document.querySelector('#to .currency-id');
+const convert = (direction) => {
+  return () => {
+    let from, to, amount, result;
+    if(direction === "backward") {
+      from = "to";
+      to = "from";
+      result = "amount";
+      amount = "result";
+    } else if (direction === "forward") {
+      from = "from";
+      to = "to";
+      result = "result";
+      amount = "amount";
+    }
 
-  if (fromCurrency && toCurrency) {
-    fetch("https://api.coingecko.com/api/v3/coins/" + fromCurrency.innerHTML)
-    .then(response => {
-      return response.json();
-    })
-    .then(data1 => {
-      const fromCurrencyToBtc = data1.market_data.current_price.btc;
-      return fetch("https://api.coingecko.com/api/v3/coins/" + toCurrency.innerHTML)
+    document.getElementById(`${result}`).value = "";
+    const fromCurrency = document.querySelector(`#${from} .currency-id`);
+    const toCurrency = document.querySelector(`#${to} .currency-id`);
+
+    if (fromCurrency && toCurrency) {
+      fetch("https://api.coingecko.com/api/v3/coins/" + fromCurrency.innerHTML)
       .then(response => {
         return response.json();
       })
-      .then(data2 => {
-        const toCurrencyToBtc = data2.market_data.current_price.btc;
-        const conversionRate = fromCurrencyToBtc / toCurrencyToBtc;
-        const total = document.getElementById('amount').value * conversionRate;
+      .then(data1 => {
+        const fromCurrencyToBtc = data1.market_data.current_price.btc;
+        return fetch("https://api.coingecko.com/api/v3/coins/" + toCurrency.innerHTML)
+        .then(response => {
+          return response.json();
+        })
+        .then(data2 => {
+          const toCurrencyToBtc = data2.market_data.current_price.btc;
+          const conversionRate = fromCurrencyToBtc / toCurrencyToBtc;
+          const total = document.getElementById(`${amount}`).value * conversionRate;
 
-        document.getElementById('result').value = total;
-        document.getElementById('result').style.color = "green";
-        setTimeout(() => {
-          document.getElementById('result').style.color = "black";
-        }, 500);
+          document.getElementById(`${result}`).value = total;
+          document.getElementById(`${result}`).style.color = "green";
+          setTimeout(() => {
+            document.getElementById(`${result}`).style.color = "black";
+          }, 500);
+        });
       });
-    });
-  } else {
-    // document.getElementById('result').innerHTML = "Please select a currency";
+    } else {
+      // document.getElementById('result').innerHTML = "Please select a currency";
+    }
   }
 }
 
@@ -113,7 +129,7 @@ const swapCurrency = () => {
   const tempCurrency = document.querySelector('#from').innerHTML;
   document.querySelector('#from').innerHTML = document.querySelector('#to').innerHTML;
   document.querySelector('#to').innerHTML = tempCurrency;
-  convert();
+  convert("forward")();
 }
 
 const init = () => {
@@ -131,7 +147,7 @@ const init = () => {
   document.getElementById('to').innerHTML = "";
   document.getElementById('to').innerHTML = selectedCoinTemplate(tetherId, tetherName, tetherImageSrc);
 
-  convert();
+  convert("forward")();
 }
 
 window.onload = () => {
@@ -151,7 +167,11 @@ window.onload = () => {
   });
 
   amountInput.forEach(item => {
-    item.addEventListener('keydown', debounce(convert, 200));
+    if(item.id === "amount") {
+      item.addEventListener('keydown', debounce(convert("forward"), 200));
+    } else if (item.id === "result") {
+      item.addEventListener('keydown', debounce(convert("backward"), 200));
+    }
   })
 
   exchangeCurrencyButton.addEventListener('click', swapCurrency);
